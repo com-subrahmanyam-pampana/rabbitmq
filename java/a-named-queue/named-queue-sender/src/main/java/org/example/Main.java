@@ -15,21 +15,24 @@ public class Main {
     public static void main(String[] argv) throws Exception {
 
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        factory.setPassword("test");
-        factory.setUsername("test");
+        factory.setHost("your-ip-address-only");
+        factory.setPassword("your-password");
+        factory.setUsername("your-user-name");
+        factory.setPort(5672);
+        ////RabbitMQ main port (AMQP)
 
         try{
+            String message="Hello Rabbit!Let eat some food";
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+            channel.queueDeclare(QUEUE_NAME, true, false, false, null);
             channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
             System.out.println(" [x] Sent '" + message + "'");
             channel.close();
             connection.close();
 
         }catch(Exception e){
-
+           System.out.println(e);
         }
 
     }

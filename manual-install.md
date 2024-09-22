@@ -96,31 +96,5 @@ sudo service rabbitmq-server start
 # To stop the RabbitMQ Service
 sudo service rabbitmq-server stop
 Step IX : Installation RabbitMQ Server Web Dashboard
-To access RabbitMQ server from browser, we have to install RabbitMQ Management plugin,
 
-rabbitmq-plugins enable rabbitmq_management
-To access RabbitMQ Dashboard,
-# From Same System : http://localhost:15672
-# From Same Network : http://ip-address:15672 like http://192.168.0.151:15672
 
-Step X : Verify RabbitMQ Status
-To check RabbitMQ server information & status, we can use following command,
-
-rabbitmqctl status
-Step XI : Default User Access
-Default it creates a user guest with password guest. Unconfigured clients will in general use these credentials. By default, these credentials can only be used when connecting to the RabbitMQ as localhost so you will need to take action before connecting from any other machine.
-
-Step XII : Create New User & Assign Permissions
-Now we have to create new user and assign administrator permissions,
-
-# Check current Users
-rabbitmqctl list_users
-# Create new user with password 
-echo 'hello@123' | rabbitmqctl add_user 'admin'
-# Assign the 'administrator' permissions
-rabbitmqctl set_permissions -p "/" "admin" ".*" ".*" ".*"
-# Set the user tag 
-rabbitmqctl set_user_tags admin administrator
-# Check current user again
-rabbitmqctl list_users
-Now with new user you can able access the RabbitMQ Dashboard.

@@ -13,13 +13,15 @@ public class Main {
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost("localhost");
-        factory.setPassword("test");
-        factory.setUsername("test");
+        factory.setHost("your-ip-address-only");
+        factory.setPassword("yourpassword");
+        factory.setUsername("yourusernmae");
+        factory.setPort(5672);
+        //RabbitMQ main port (AMQP)
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.queueDeclare(QUEUE_NAME, false, false, false, null);
+        channel.queueDeclare(QUEUE_NAME, true, false, false, null);
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
 
