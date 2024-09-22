@@ -8,7 +8,7 @@ import com.rabbitmq.client.DeliverCallback;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    private final static String QUEUE_NAME = "hello";
+    private final static String EXCHANGE_NAME  = "logs";
 
 
 
@@ -18,12 +18,16 @@ public class Main {
         factory.setHost("localhost");
         factory.setPassword("test");
         factory.setUsername("test");
-
+        factory.setPort(5672);
         try{
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.queueDeclare(QUEUE_NAME, false, false, false, null);
-            channel.basicPublish("", QUEUE_NAME, null, message.getBytes());
+            channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+            //fanout is type of exchange
+            String message = argv.length < 1 ? "info: Hello World!" :
+                    String.join(" ", argv);
+
+            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
             System.out.println(" [x] Sent '" + message + "'");
             channel.close();
             connection.close();
