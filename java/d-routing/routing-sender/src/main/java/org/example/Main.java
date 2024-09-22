@@ -8,11 +8,15 @@ import com.rabbitmq.client.DeliverCallback;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    private final static String EXCHANGE_NAME  = "logs";
+    private final static String EXCHANGE_NAME  = "direct_logs";
 
 
 
     public static void main(String[] argv) throws Exception {
+
+        String[] testArgs1 = {"error", "This is a test error message"};
+        String[] testArgs2 = {"info", "This is a test info message"};
+        String[] testArgs3 = {"warn", "This is a test warn message"};
 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -22,12 +26,14 @@ public class Main {
         try{
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+            channel.exchangeDeclare(EXCHANGE_NAME, "direct");
             //fanout is type of exchange
-            String message = argv.length < 1 ? "info: Hello World!" :
-                    String.join(" ", argv);
 
-            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+
+            String severity = getSeverity(testArgs1);
+            String message = getMessage(testArgs1);
+
+            channel.basicPublish(EXCHANGE_NAME, severity, null, message.getBytes("UTF-8"));
             System.out.println(" [x] Sent '" + message + "'");
             channel.close();
             connection.close();
@@ -36,6 +42,16 @@ public class Main {
 
         }
 
+    }
+
+    // Extracts the severity from the test arguments, defaults to "info" if not provided
+    private static String getSeverity(String[] argv) {
+        return (argv.length > 0) ? argv[0] : "info";
+    }
+
+    // Extracts the message from the test arguments, defaults to "Hello World!" if not provided
+    private static String getMessage(String[] argv) {
+        return (argv.length > 1) ? argv[1] : "Hello World!";
     }
 }
 
