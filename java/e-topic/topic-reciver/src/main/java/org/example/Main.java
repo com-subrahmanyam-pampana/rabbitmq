@@ -9,7 +9,7 @@ import java.nio.charset.StandardCharsets;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    private final static String EXCHANGE_NAME  = "logs";
+    private final static String EXCHANGE_NAME  = "topic_logs";
 
     public static void main(String[] argv) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
@@ -20,17 +20,15 @@ public class Main {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+        channel.exchangeDeclare(EXCHANGE_NAME, "topic");
         String queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, EXCHANGE_NAME, "");
+
+
+        String[] bindingKeys = {"kern.*", "*.critical"};
+        for (String bindingKey : bindingKeys) {
+            channel.queueBind(queueName, EXCHANGE_NAME, bindingKey);
+        }
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
-
-        //When you call channel.queueDeclare(), you are either creating a new queue or ensuring that an existing queue is available.
-
-//        A queue is declared dynamically using channel.queueDeclare(), and RabbitMQ generates a unique queue name (queueName).
-//                The queue is then bound to the fanout exchange using channel.queueBind().
-//                In a fanout exchange, the routing key is ignored, so an empty string "" is used for the binding.
-
 
         DeliverCallback deliverCallback = (consumerTag, delivery) -> {
             String message = new String(delivery.getBody(), "UTF-8");

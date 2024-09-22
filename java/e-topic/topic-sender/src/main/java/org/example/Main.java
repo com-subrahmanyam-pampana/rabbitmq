@@ -8,7 +8,7 @@ import com.rabbitmq.client.DeliverCallback;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    private final static String EXCHANGE_NAME  = "logs";
+    private final static String EXCHANGE_NAME  = "topic_logs";
 
 
 
@@ -22,12 +22,12 @@ public class Main {
         try{
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
-            //fanout is type of exchange
-            String message = argv.length < 1 ? "info: Hello World!" :
-                    String.join(" ", argv);
+            channel.exchangeDeclare(EXCHANGE_NAME, "topic");
 
-            channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes("UTF-8"));
+
+            String routingKey = "kern.critical";  // You can change the routing key here
+            String message = "A critical kernel error";  // You can change the message here
+            channel.basicPublish(EXCHANGE_NAME, routingKey, null, message.getBytes("UTF-8"));
             System.out.println(" [x] Sent '" + message + "'");
             channel.close();
             connection.close();
